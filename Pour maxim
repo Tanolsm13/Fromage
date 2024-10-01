@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de sécurité - Force Brute</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+        #history {
+            margin-top: 20px;
+            font-size: 16px;
+            text-align: left;
+            max-width: 400px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: auto;
+            max-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    
+    <a href="https://votre-url-de-site.com/votre-fichier.html" target="_blank">Ouvrir l'outil de Force Brute</a>
+
+    <h1>Force Brute - Test de Sécurité</h1>
+    <p>Entrez un mot de passe et un ensemble de caractères pour simuler une attaque de force brute.</p>
+    
+    <input type="text" id="password" placeholder="Mot de passe à casser" />
+    <input type="text" id="charset" placeholder="Ensemble de caractères (ex : abc123)" />
+    <input type="number" id="maxLength" placeholder="Longueur du mot de passe" value="3" />
+    <button onclick="bruteForce()">Lancer le brute-force</button>
+
+    <div id="result"></div>
+    <div id="history"></div>
+
+    <script>
+        let found = false; // Variable pour indiquer si le mot de passe a été trouvé
+        let charset = '';
+        let password = '';
+        let targetLength = 0;
+        let index = 0;
+        let attempts = [];
+
+        function bruteForce() {
+            password = document.getElementById('password').value;
+            charset = document.getElementById('charset').value;
+            targetLength = parseInt(document.getElementById('maxLength').value);
+            const resultDiv = document.getElementById('result');
+            const historyDiv = document.getElementById('history');
+
+            found = false;
+            attempts = [];
+            index = 0; // Réinitialiser l'index
+
+            resultDiv.innerHTML = "Recherche en cours...";
+            historyDiv.innerHTML = ""; // Réinitialiser l'historique
+
+            // Démarrer le processus de génération
+            generateNextCombination();
+        }
+
+        // Fonction pour générer les combinaisons
+        function generateNextCombination() {
+            if (found) return; // Si le mot de passe a été trouvé, arrêter la recherche
+
+            // Générer la prochaine combinaison
+            let combination = generateCombination(index, targetLength);
+
+            // Ajouter à l'historique
+            attempts.push(combination);
+            document.getElementById('history').innerHTML += `<div>${combination}</div>`;
+
+            // Vérifier si c'est le bon mot de passe
+            if (combination === password) {
+                found = true;
+                document.getElementById('result').innerHTML = `Mot de passe trouvé : <b>${combination}</b>`;
+                return;
+            }
+
+            // Passer à la prochaine combinaison
+            index++;
+            setTimeout(generateNextCombination, 2000); // Appelle la fonction suivante après 2 secondes
+        }
+
+        // Fonction pour générer une combinaison à partir d'un index donné
+        function generateCombination(index, length) {
+            let combination = '';
+            for (let i = 0; i < length; i++) {
+                combination += charset.charAt((index / Math.pow(charset.length, i)) % charset.length);
+            }
+            return combination;
+        }
+    </script>
+
+</body>
+</html>
